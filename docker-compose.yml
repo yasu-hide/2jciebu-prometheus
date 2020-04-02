@@ -1,0 +1,12 @@
+---
+version: "3"
+services:
+  2jciebu-machinist:
+    image: vet5lqplpecmpnqb/2jciebu-machinist
+    env_file:
+      - .env
+    deploy:
+      restart_policy:
+        condition: on-failure
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
