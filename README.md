@@ -28,8 +28,8 @@ https://app.machinist.iij.jp/sign-up
 
 など
 
-## 手順
-### udevルール作成
+# 手順
+## udevルール作成
 /etc/udev/rules.d/10-2JCIE-BU.rules
 ```
 ACTION=="add", \
@@ -44,14 +44,14 @@ udevd restart
 systemctl udevd restart
 ```
 
-### 2JCIE-BU取付
+## 2JCIE-BU取付
 
-### リポジトリクローン
+## リポジトリクローン
 ```
 git clone https://github.com/yasu-hide/2jciebu-machinist
 ```
 
-### 設定編集
+## 設定編集
 詳細は 設定ファイル (.envファイル) を参照
 ```
 cd 2jciebu-machinist
@@ -63,12 +63,12 @@ MACHINIST_SEND_METRICS=temperature relative_humidity ambient_light
 EOF
 ```
 
-### Dockerコンテナ起動
+## Dockerコンテナ起動
 ```
 docker-compose up -d
 ```
 
-### Enjoy!
+## Enjoy!
 
 # 設定ファイル (.envファイル)
 ## SENSOR_SERIAL_DEVICE
@@ -93,6 +93,8 @@ Machinistに投入するデータの名前空間
 ## MACHINIST_SEND_METRICS
 Machinistに投入するデータの種類
 
+スペース区切りで記述
+
 クオートの括り( "" や '' )は不要
 
 指定できる値 (13種類)
@@ -112,7 +114,7 @@ pga  最大加速度値
 seismic_intensity  震度
 ```
 
-## 参考情報
+# 参考情報
 - 形2JCIE-BU　環境センサ USB型 | OMRON - Japan - https://www.omron.co.jp/ecb/product-detail?partNumber=2JCIE-BU
 - omron-devhub/2jciebu-usb-raspberrypi - https://github.com/omron-devhub/2jciebu-usb-raspberrypi
 - OMRON USB型環境センサー 2JCIE-BUをLinux(debian9/OpenBlocks IoT)からUSB接続して使用する - Qiita - https://qiita.com/goto2048/items/d2706088af90503dd4c8
