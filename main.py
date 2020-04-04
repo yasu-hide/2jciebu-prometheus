@@ -1,13 +1,19 @@
 #!/usr/bin/env python
 from sensor import Sensor
 from machinist import Machinist
-import json, traceback
+import json
 import sys, os, time
+import threading, logging
+if sys.version_info.major != 2:
+    from queue import Queue
+else:
+    from Queue import Queue
+logging.basicConfig(level=logging.DEBUG, format='%(threadName)s: %(message)s')
 
 SENSOR_SERIAL_DEVICE = os.environ.get('SENSOR_SERIAL_DEVICE', '/dev/ttyUSB0')
 MACHINIST_APIKEY = os.environ.get('MACHINIST_APIKEY', '')
 
-def metrics_data(data, agent='env_sensor'):
+def sensor_metrics(data, agent='env_sensor'):
     m_namespace = os.environ.get('MACHINIST_NAMESPACE', agent)
     allow_metrics = os.environ.get('MACHINIST_SEND_METRICS', '').split()
     to_int = lambda s: int(s.encode('hex'), 16)
@@ -151,17 +157,34 @@ def metrics_data(data, agent='env_sensor'):
         )
     return content
 
-if __name__ == "__main__":
-    m = Machinist(MACHINIST_APIKEY)
+def sensor_worker(th_queue):
+    logging.debug('start')
     sen = Sensor(SENSOR_SERIAL_DEVICE)
     sen.open()
     try:
         while sen.isopen():
             data = sen.read()
-            metrics = metrics_data(data)
-            set_result = m.set_latest(metrics)
-            print(json.dumps(set_result, sort_keys=True, indent=4))
+            metrics = sensor_metrics(data)
+            th_queue.put(metrics)
             time.sleep(60)
     except:
-        traceback.print_exc()
         sen.close()
+    logging.debug('end')
+
+if __name__ == "__main__":
+    logging.debug('start')
+    m = Machinist(MACHINIST_APIKEY)
+    th_queue = Queue()
+
+    sens_th = threading.Thread(name='SensorThread', target=sensor_worker, args=(th_queue,))
+
+    sens_th.start()
+
+    while True:
+        metrics = th_queue.get()
+        result = m.set_latest(metrics)
+        logging.info(json.dumps(result, sort_keys=True, indent=4))
+
+    sens_th.join()
+
+    logging.debug('end')
