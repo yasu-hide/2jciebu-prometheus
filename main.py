@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from sensor import Sensor
 from machinist import Machinist
-import json, traceback
-import sys, os, time
+import json, time
+import sys, os, signal
+import traceback, logging
+logging.basicConfig(level=logging.DEBUG)
 
 SENSOR_SERIAL_DEVICE = os.environ.get('SENSOR_SERIAL_DEVICE', '/dev/ttyUSB0')
 MACHINIST_APIKEY = os.environ.get('MACHINIST_APIKEY', '')
@@ -152,8 +154,11 @@ def metrics_data(data, agent='env_sensor'):
     return content
 
 if __name__ == "__main__":
+    logging.debug('start')
     m = Machinist(MACHINIST_APIKEY)
     sen = Sensor(SENSOR_SERIAL_DEVICE)
+    signal.signal(signal.SIGTERM, lambda *args: sen.close())
+    signal.signal(signal.SIGINT, lambda *args: sen.close())
     sen.open()
     try:
         while sen.isopen():
@@ -162,6 +167,9 @@ if __name__ == "__main__":
             set_result = m.set_latest(metrics)
             print(json.dumps(set_result, sort_keys=True, indent=4))
             time.sleep(60)
+    except KeyboardInterrupt:
+        pass
     except:
-        traceback.print_exc()
-        sen.close()
+        logging.error('An error occurred.', exc_info=True)
+    sen.close()
+    logging.debug('end')
