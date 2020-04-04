@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from sensor import Sensor
 from machinist import Machinist
-import json, time
+import json, time, datetime
 import sys, os, signal
 import traceback, logging
 logging.basicConfig(level=logging.DEBUG)
@@ -9,9 +9,10 @@ logging.basicConfig(level=logging.DEBUG)
 SENSOR_SERIAL_DEVICE = os.environ.get('SENSOR_SERIAL_DEVICE', '/dev/ttyUSB0')
 MACHINIST_APIKEY = os.environ.get('MACHINIST_APIKEY', '')
 
-def metrics_data(data, agent='env_sensor'):
+def metrics_data(data, measured_at=datetime.datetime.now(), agent='env_sensor'):
     m_namespace = os.environ.get('MACHINIST_NAMESPACE', agent)
     allow_metrics = os.environ.get('MACHINIST_SEND_METRICS', '').split()
+    timestamp = int(time.mktime(measured_at.timetuple()))
     to_int = lambda s: int(s.encode('hex'), 16)
     content = {
         "agent": agent,
@@ -28,6 +29,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[9]), to_int(data[8])), 16) / 100.0,
+                    "timestamp": timestamp
                 }
             }
         )
@@ -38,6 +40,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[11]), to_int(data[10])), 16) / 100.0,
+                    "timestamp": timestamp
                 }
             }
         )
@@ -48,6 +51,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[13]), to_int(data[12])), 16),
+                    "timestamp": timestamp
                 }
             }
         )
@@ -58,6 +62,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}{:02x}{:02x}'.format(to_int(data[17]), to_int(data[16]), to_int(data[15]), to_int(data[14])), 16) / 1000.0,
+                    "timestamp": timestamp
                 }
             }
         )
@@ -68,6 +73,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[19]), to_int(data[18])), 16) / 100.0,
+                    "timestamp": timestamp
                 }
             }
         )
@@ -78,6 +84,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[21]), to_int(data[20])), 16),
+                    "timestamp": timestamp
                 }
             }
         )
@@ -88,6 +95,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[23]), to_int(data[22])), 16),
+                    "timestamp": timestamp
                 }
             }
         )
@@ -98,6 +106,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[25]), to_int(data[24])), 16) / 100.0,
+                    "timestamp": timestamp
                 }
             }
         )
@@ -108,6 +117,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[27]), to_int(data[26])), 16) / 100.0,
+                    "timestamp": timestamp
                 }
             }
         )
@@ -118,6 +128,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}'.format(to_int(data[28])), 16),
+                    "timestamp": timestamp
                 }
             }
         )
@@ -128,6 +139,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[30]), to_int(data[29])), 16) / 10.0,
+                    "timestamp": timestamp
                 }
             }
         )
@@ -138,6 +150,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[32]), to_int(data[31])), 16) / 10.0,
+                    "timestamp": timestamp
                 }
             }
         )
@@ -148,6 +161,7 @@ def metrics_data(data, agent='env_sensor'):
                 "namespace": m_namespace,
                 "data_point": {
                     "value": int('{:x}{:02x}'.format(to_int(data[34]), to_int(data[33])), 16) / 1000.0,
+                    "timestamp": timestamp
                 }
             }
         )
@@ -163,7 +177,8 @@ if __name__ == "__main__":
     try:
         while sen.isopen():
             data = sen.read()
-            metrics = metrics_data(data)
+            now = datetime.datetime.now()
+            metrics = metrics_data(data, measured_at=now)
             set_result = m.set_latest(metrics)
             print(json.dumps(set_result, sort_keys=True, indent=4))
             time.sleep(60)
