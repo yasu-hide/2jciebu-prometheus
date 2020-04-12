@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from sensor import Sensor
-from machinist import Machinist
+from sensor import Sensor, SensorSerialError
+from machinist import Machinist, MachinistHTTPError
 import json, time, datetime
 import sys, os, signal
 import traceback, logging
@@ -176,11 +176,19 @@ if __name__ == "__main__":
     sen.open()
     try:
         while sen.isopen():
-            data = sen.read()
             now = datetime.datetime.now()
-            metrics = metrics_data(data, measured_at=now)
-            set_result = m.set_latest(metrics)
-            print(json.dumps(set_result, sort_keys=True, indent=4))
+            try:
+                data = sen.read()
+                metrics = metrics_data(data, measured_at=now)
+            except SensorSerialError:
+                logging.error('Sensor serial error occurred.', exc_info=True)
+                time.sleep(10)
+                continue
+            try:
+                set_result = m.set_latest(metrics)
+                sys.stderr.write(json.dumps(set_result, sort_keys=True, indent=4) + "\n")
+            except MachinistHTTPError:
+                logging.error('Machinist http error occurred.', exc_info=True)
             time.sleep(60)
     except KeyboardInterrupt:
         pass

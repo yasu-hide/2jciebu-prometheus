@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import serial
 import sys, time
-import traceback
 
+class SensorSerialError(serial.SerialException): pass
 class Sensor:
     SENSOR_NORMALLY_ON = bytearray([0x52, 0x42, 0x0a, 0x00, 0x02, 0x11, 0x51, 0x01, 0x00, 0, 255, 0])
     SENSOR_NORMALLY_OFF = bytearray([0x52, 0x42, 0x0a, 0x00, 0x02, 0x11, 0x51, 0x00, 0x00, 0, 0, 0])
@@ -35,9 +35,8 @@ class Sensor:
             time.sleep(0.5)
             self.isopened = True
             return self.serial.read(self.serial.inWaiting())
-        except:
-            pass
-        return
+        except serial.SerialException as e:
+            raise SensorSerialError(e)
     def close(self):
         command = self._get_command(self.SENSOR_NORMALLY_OFF)
         if not self.isopen():
@@ -47,7 +46,7 @@ class Sensor:
             time.sleep(0.5)
             self.isopened = False
             return self.serial.read(self.serial.inWaiting())
-        except:
+        except serial.SerialException:
             # Retry
             self.close()
         return
@@ -60,15 +59,12 @@ class Sensor:
             if len(data) == self.VALID_DATALEN:
                 return data
             return None
-        except:
+        except serial.SerialException:
             self.close()
 
 if __name__ == "__main__":
     sen = Sensor()
     sen.open()
-    try:
-        while sen.isopen():
-            data = sen.read()
-            print(json.dumps(data))
-    except:
-        sen.close()
+    while sen.isopen():
+        data = sen.read()
+        print(json.dumps(data))
