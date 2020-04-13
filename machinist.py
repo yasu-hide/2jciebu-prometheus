@@ -30,6 +30,6 @@ class Machinist:
                     body = body.decode()
                 if rcode == 200:
                     return json.loads(body)
-        except HTTPError as e:
+        except (HTTPError, URLError) as e:
             raise MachinistHTTPError(e)
         return {}
