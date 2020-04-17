@@ -58,8 +58,11 @@ cd 2jciebu-machinist
 cat <<'EOF' > .env
 SENSOR_SERIAL_DEVICE=/dev/ttyUSB0
 MACHINIST_APIKEY=(MACHINIST APIKEY)
+MACHINIST_AGENT=(MACHINIST_AGENT)
+MACHINIST_AGENT_ID=(MACHINIST_AGENT_ID)
 MACHINIST_NAMESPACE=(MACHINIST NAMESPACE)
-MACHINIST_SEND_METRICS=temperature relative_humidity ambient_light
+MACHINIST_TAGS=(MACHINIST_TAGS)
+MACHINIST_SEND_METRICS=temperature relative_humidity ambient_light ...
 EOF
 ```
 
@@ -85,10 +88,25 @@ Machinistにデータを投入するためのAPIキー
 
 無指定の場合は __空文字__
 
+## MACHINIST_AGENT
+Machinistに投入するデータのAgent
+
+MACHINIST_AGENT または MACHINIST_AGENT_ID が必須
+
+## MACHINIST_AGENT_ID
+Machinistに投入するデータのAgent ID
+
+MACHINIST_AGENT または MACHINIST_AGENT_ID が必須
+
 ## MACHINIST_NAMESPACE
 Machinistに投入するデータの名前空間
 
-無指定の場合は __env_sensor__
+## MACHINIST_TAGS
+Machinistに投入するデータのタグ
+
+スペース区切りで記述
+
+キーと値をコロン(:)で分割して指定
 
 ## MACHINIST_SEND_METRICS
 Machinistに投入するデータの種類

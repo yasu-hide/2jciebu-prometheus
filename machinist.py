@@ -10,7 +10,7 @@ else:
     from urlparse import urlparse
 from contextlib import closing
 
-class MachinistHTTPError(HTTPError): pass
+class MachinistHTTPError(URLError): pass
 class Machinist:
     ENDPOINT_URL = 'https://gw.machinist.iij.jp/endpoint'
 
@@ -30,6 +30,8 @@ class Machinist:
                     body = body.decode()
                 if rcode == 200:
                     return json.loads(body)
-        except (HTTPError, URLError) as e:
-            raise MachinistHTTPError(e)
+        except HTTPError as e:
+            raise MachinistHTTPError("{}: {}".format(e.code, e.msg))
+        except URLError as e:
+            raise MachinistHTTPError("{}".format(e.reason))
         return {}
