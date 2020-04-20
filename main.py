@@ -39,7 +39,7 @@ def metrics_data(sen, measured_at=datetime.datetime.now()):
 
     if len(allow_metrics) < 1:
         return content
-    
+    sen_data = sen.read().get_all()
     for m_name in allow_metrics:
         metrics = {
             "name": m_name,
@@ -49,9 +49,11 @@ def metrics_data(sen, measured_at=datetime.datetime.now()):
             metrics['namespace'] = m_namespace
         if m_tags:
             metrics['tags'] = m_tags
-        sen_name = "get_{}".format(m_name)
-        if hasattr(sen, sen_name):
-            metrics["data_point"]["value"] = getattr(sen, sen_name)()
+        if m_name in sen_data:
+            metrics["data_point"]["value"] = sen_data[m_name]
+        else:
+            logging.warn("no key in sensor data: {}".format(m_name))
+            continue
         if timestamp:
             metrics['data_point']['timestamp'] = timestamp
         content['metrics'].append(metrics)
