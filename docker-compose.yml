@@ -10,3 +10,4 @@ services:
         condition: on-failure
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
+    restart: always
