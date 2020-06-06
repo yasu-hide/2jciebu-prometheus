@@ -1,4 +1,9 @@
 # 2JCIE-BU to Machinist
+
+![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/vet5lqplpecmpnqb/2jciebu-machinist?label=DOCKER%20BUILD)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/vet5lqplpecmpnqb/2jciebu-machinist?label=DOCKER%20BUILD)
+
+
 OMRON USB環境センサ [2JCIE-BU](https://www.omron.co.jp/ecb/product-detail?partId=73063)から取得した値を、IIJが提供するデータ分析基盤[Machinist](https://machinist.iij.jp/)に投入するスクリプトです。
 
 ![2jicebu](https://user-images.githubusercontent.com/5038337/78339365-513f3b80-75cf-11ea-8e90-483894f71502.png)
