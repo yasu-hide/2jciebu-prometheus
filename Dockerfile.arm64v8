@@ -1,0 +1,11 @@
+FROM multiarch/qemu-user-static AS qemu
+FROM arm64v8/python:2-slim-stretch
+WORKDIR /tmp
+COPY --from=qemu /usr/bin/qemu-aarch64-static /usr/bin/qemu-aarch64-static
+RUN pip install pyserial
+COPY main.py /tmp/main.py
+COPY sensor.py /tmp/sensor.py
+COPY machinist.py /tmp/machinist.py
+RUN rm -f /usr/bin/qemu-aarch64-static
+ENTRYPOINT ["python", "-u"]
+CMD ["/tmp/main.py"]
