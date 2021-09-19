@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from sensor import Sensor, SensorSerialError
 from machinist import Machinist, MachinistHTTPError
+from nanohat_oled import NanoHatOled
 import json, time, datetime
 import sys, os, signal
 import traceback, logging
@@ -63,9 +64,16 @@ if __name__ == "__main__":
     logging.debug('start')
     m = Machinist(MACHINIST_APIKEY)
     sen = Sensor(SENSOR_SERIAL_DEVICE)
+    oled = None
+    try:
+        oled = NanoHatOled()
+        oled.start()
+    except:
+        oled = None
     signal.signal(signal.SIGTERM, lambda *args: sen.close())
     signal.signal(signal.SIGINT, lambda *args: sen.close())
     sen.open()
+    lastrun_date = datetime.datetime.fromtimestamp(0)
     try:
         while sen.isopen():
             now = datetime.datetime.now()
@@ -75,15 +83,21 @@ if __name__ == "__main__":
                 logging.error('Sensor serial error occurred.', exc_info=True)
                 time.sleep(10)
                 continue
-            try:
-                set_result = m.set_latest(metrics)
-                sys.stderr.write(json.dumps(set_result, sort_keys=True, indent=4) + "\n")
-            except MachinistHTTPError:
-                logging.error('Machinist http error occurred.', exc_info=True)
-            time.sleep(60)
-    except KeyboardInterrupt:
-        pass
+            if oled:
+                oled.put_image(sen.get_temperature(), sen.get_relative_humidity(), sen.get_eCO2(), sen.get_barometric_pressure())
+                oled.queue.join()
+            if now >= lastrun_date + datetime.timedelta(seconds=60):
+                try:
+                    set_result = m.set_latest(metrics)
+                    sys.stderr.write(json.dumps({ "date": str(now), "result": set_result}, sort_keys=True, indent=4) + "\n")
+                except MachinistHTTPError:
+                    logging.error('Machinist http error occurred.', exc_info=True)
+                lastrun_date = now
+            time.sleep(3)
     except:
         logging.error('An error occurred.', exc_info=True)
-    sen.close()
+    finally:
+        if oled:
+            oled.oled_close()
+        sen.close()
     logging.debug('end')
