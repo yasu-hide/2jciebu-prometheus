@@ -10,8 +10,8 @@ from PIL import ImageDraw
 class NanoHatOled ():
     WIDTH = oled.SeeedOLED_Width
     HEIGHT = oled.SeeedOLED_Height
-    FONT_TT_BOLD = 'DejaVuSansMono-Bold.ttf'
-    FONT_TT_NORMAL = 'DejaVuSansMono.ttf'
+    FONT_TT_BOLD = '/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf'
+    FONT_TT_NORMAL = '/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf'
     def __init__(self):
         self.image = Image.new('1', (self.WIDTH, self.HEIGHT))
         self.draw = ImageDraw.Draw(self.image)
@@ -36,10 +36,10 @@ class NanoHatOled ():
         return ImageFont.truetype(self.FONT_TT_NORMAL, size)
     def put_image(self, deg, humi, eco2, baro):
         self.draw.rectangle((0,0,self.WIDTH,self.HEIGHT), outline=0, fill=0)
-        self.draw.text((2,2), "{:3.1f}".format(deg), font=self.font_bold(size=20), fill=255)
-        self.draw.text((62,4), "{:3.1f} %".format(humi), font=self.font_normal(size=16), fill=255)
-        self.draw.text((2,28), "{:4d} ppm".format(eco2), font=self.font_normal(size=14), fill=255)
-        self.draw.text((2,44), "{:.1f} hPa".format(baro), font=self.font_normal(size=14), fill=255)
+        self.draw.text((2,2), "{:3.1f}".format(deg), font=self.font_bold(size=22), fill=255)
+        self.draw.text((62,4), "{:3.1f} %".format(humi), font=self.font_normal(size=18), fill=255)
+        self.draw.text((2,24), "{:4d} ppm".format(eco2), font=self.font_normal(size=16), fill=255)
+        self.draw.text((2,42), "{:.1f} hPa".format(baro), font=self.font_normal(size=16), fill=255)
         self.queue.put(self.image)
     def _draw_loop(self):
         while True:
