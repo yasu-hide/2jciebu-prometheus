@@ -9,6 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 SENSOR_SERIAL_DEVICE = os.environ.get('SENSOR_SERIAL_DEVICE', '/dev/ttyUSB0')
 MACHINIST_APIKEY = os.environ.get('MACHINIST_APIKEY', '')
+OLED_AUTODIM_BRIGHTNESS = os.environ.get('OLED_AUTODIM_BRIGHTNESS', '0')
 
 def metrics_data(sen, measured_at=datetime.datetime.now()):
     m_agent = os.environ.get('MACHINIST_AGENT', None)
@@ -64,6 +65,7 @@ if __name__ == "__main__":
     logging.debug('start')
     m = Machinist(MACHINIST_APIKEY)
     sen = Sensor(SENSOR_SERIAL_DEVICE)
+    autodim_thres = int(OLED_AUTODIM_BRIGHTNESS)
     oled = None
     try:
         oled = NanoHatOled()
@@ -84,8 +86,12 @@ if __name__ == "__main__":
                 time.sleep(10)
                 continue
             if oled:
-                oled.put_image(sen.get_temperature(), sen.get_relative_humidity(), sen.get_eCO2(), sen.get_barometric_pressure())
-                oled.queue.join()
+                brightness = sen.get_ambient_light()
+                if brightness > autodim_thres:
+                    oled.put_image(sen.get_temperature(), sen.get_relative_humidity(), sen.get_eCO2(), sen.get_barometric_pressure())
+                    oled.queue.join()
+                else:
+                    oled.oled_clear()
             if now >= lastrun_date + datetime.timedelta(seconds=60):
                 try:
                     set_result = m.set_latest(metrics)

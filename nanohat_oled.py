@@ -21,6 +21,8 @@ class NanoHatOled ():
         oled.init()
         oled.setNormalDisplay()
         oled.setHorizontalMode()
+    def oled_clear(self):
+        oled.clearDisplay()
     def oled_close(self):
         oled.sendCommand(oled.SeeedOLED_Display_Off_Cmd)
         for j in range(8):
@@ -43,6 +45,7 @@ class NanoHatOled ():
         while True:
             image = self.queue.get()
             oled.drawImage(image)
+            oled.setBrightness(0)
             self.queue.task_done()
     def start(self):
         th = threading.Thread(target=self._draw_loop)
