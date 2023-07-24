@@ -1,4 +1,4 @@
-FROM python:2-slim-stretch
+FROM python:3.12.0b3-slim
 WORKDIR /tmp
 RUN pip install pyserial
 COPY main.py /tmp/main.py
