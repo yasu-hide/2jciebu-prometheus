@@ -1,11 +1,10 @@
 FROM multiarch/qemu-user-static AS qemu
-FROM arm32v7/python:2-slim-stretch
+FROM arm32v7/python:3-slim
 WORKDIR /tmp
 COPY --from=qemu /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
-RUN pip install pyserial
+RUN pip install pyserial prometheus-client
 COPY main.py /tmp/main.py
 COPY sensor.py /tmp/sensor.py
-COPY machinist.py /tmp/machinist.py
 RUN rm -f /usr/bin/qemu-arm-static
-ENTRYPOINT ["python", "-u"]
+ENTRYPOINT ["python3", "-u"]
 CMD ["/tmp/main.py"]

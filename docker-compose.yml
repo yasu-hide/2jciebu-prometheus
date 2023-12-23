@@ -1,8 +1,8 @@
 ---
 version: "3"
 services:
-  2jciebu-machinist:
-    image: vet5lqplpecmpnqb/2jciebu-machinist
+  2jciebu-prometheus:
+    image: vet5lqplpecmpnqb/2jciebu-prometheus
     env_file:
       - .env
     deploy:

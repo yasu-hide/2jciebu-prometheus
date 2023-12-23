@@ -1,8 +1,7 @@
-FROM python:3.12.0b3-slim
+FROM python:3-slim
 WORKDIR /tmp
-RUN pip install pyserial
+RUN pip install pyserial prometheus-client
 COPY main.py /tmp/main.py
 COPY sensor.py /tmp/sensor.py
-COPY machinist.py /tmp/machinist.py
-ENTRYPOINT ["python", "-u"]
+ENTRYPOINT ["python3", "-u"]
 CMD ["/tmp/main.py"]
