@@ -7,7 +7,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 SENSOR_SERIAL_DEVICE = os.environ.get('SENSOR_SERIAL_DEVICE', '/dev/ttyUSB0')
-start_http_server(8000)
+SERVER_HTTP_PORT = os.environ.get('SERVER_HTTP_PORT', 8000)
+start_http_server(SERVER_HTTP_PORT)
 gauge = {
     'temperature': Gauge('sensor_omron_temperature', 'Temperature'),
     'relative_humidity': Gauge('sensor_omron_humidity', 'Humidity'),
