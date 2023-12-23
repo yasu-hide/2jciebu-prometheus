@@ -11,3 +11,5 @@ services:
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
     restart: always
+    ports:
+      - 127.0.0.1:$SERVER_HTTP_PORT:$SERVER_HTTP_PORT
