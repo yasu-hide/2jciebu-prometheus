@@ -1,12 +1,10 @@
-# 2JCIE-BU to Machinist
+# 2JCIE-BU to Prometheus
 
 ![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/vet5lqplpecmpnqb/2jciebu-machinist?label=DOCKER%20BUILD)
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/vet5lqplpecmpnqb/2jciebu-machinist?label=DOCKER%20BUILD)
 
 
-OMRON USB環境センサ [2JCIE-BU](https://www.omron.co.jp/ecb/product-detail?partId=73063)から取得した値を、IIJが提供するデータ分析基盤[Machinist](https://machinist.iij.jp/)に投入するスクリプトです。
-
-![2jicebu](https://user-images.githubusercontent.com/5038337/78339365-513f3b80-75cf-11ea-8e90-483894f71502.png)
+OMRON USB環境センサ [2JCIE-BU](https://www.omron.co.jp/ecb/product-detail?partId=73063)から取得した値を、exporterを通じてPrometheusに投入するスクリプトです。
 
 Dockerコンテナで動作します。
 
@@ -16,14 +14,6 @@ Dockerコンテナで動作します。
 - [OMRON 2JCIE-BU](https://www.omron.co.jp/ecb/product-detail?partId=73063)
 
 ![73063](https://user-images.githubusercontent.com/5038337/78334071-0d940400-75c6-11ea-9939-7b618b511d24.gif)
-
-- Machinistアカウント
-
-無料で取得できます。
-
-https://app.machinist.iij.jp/sign-up
-
-<img width="2032" alt="custom-charts" src="https://user-images.githubusercontent.com/5038337/78334190-4af89180-75c6-11ea-814c-9a6c8cdf1a1f.png">
 
 - 常時稼働させられる端末
 
@@ -53,21 +43,16 @@ systemctl udevd restart
 
 ## リポジトリクローン
 ```
-git clone https://github.com/yasu-hide/2jciebu-machinist
+git clone https://github.com/yasu-hide/2jciebu-prometheus
 ```
 
 ## 設定編集
 詳細は 設定ファイル (.envファイル) を参照
 ```
-cd 2jciebu-machinist
+cd 2jciebu-prometheus
 cat <<'EOF' > .env
 SENSOR_SERIAL_DEVICE=/dev/ttyUSB0
-MACHINIST_APIKEY=(MACHINIST APIKEY)
-MACHINIST_AGENT=(MACHINIST_AGENT)
-MACHINIST_AGENT_ID=(MACHINIST_AGENT_ID)
-MACHINIST_NAMESPACE=(MACHINIST NAMESPACE)
-MACHINIST_TAGS=(MACHINIST_TAGS)
-MACHINIST_SEND_METRICS=temperature relative_humidity ambient_light ...
+SERVER_HTTP_PORT=8000
 EOF
 ```
 
@@ -86,56 +71,10 @@ docker-compose up -d
 
 無指定の場合は __/dev/ttyUSB0__
 
-## MACHINIST_APIKEY
-Machinistにデータを投入するためのAPIキー
+## SERVER_HTTP_PORT
+exporter用HTTPサーバの待ち受けポート番号を指定
 
-[Machinist アカウント設定](https://app.machinist.iij.jp/profile) から取得
-
-無指定の場合は __空文字__
-
-## MACHINIST_AGENT
-Machinistに投入するデータのAgent
-
-MACHINIST_AGENT または MACHINIST_AGENT_ID が必須
-
-## MACHINIST_AGENT_ID
-Machinistに投入するデータのAgent ID
-
-MACHINIST_AGENT または MACHINIST_AGENT_ID が必須
-
-## MACHINIST_NAMESPACE
-Machinistに投入するデータの名前空間
-
-## MACHINIST_TAGS
-Machinistに投入するデータのタグ
-
-スペース区切りで記述
-
-キーと値をコロン(:)で分割して指定
-
-## MACHINIST_SEND_METRICS
-Machinistに投入するデータの種類
-
-スペース区切りで記述
-
-クオートの括り( "" や '' )は不要
-
-指定できる値 (13種類)
-```
-temperature  気温
-relative_humidity  相対湿度
-ambient_light  照度
-barometric_pressure  気圧
-sound_noise  騒音
-eTVOC  総揮発性有機化学物量相当値
-eCO2  二酸化炭素濃度相当値
-discomfort_index  不快指数
-heat_stroke  熱中症警戒度
-vibration_information  振動情報
-si_value  スペクトル強度
-pga  最大加速度値
-seismic_intensity  震度
-```
+無指定の場合は __8000__
 
 # 参考情報
 - 形2JCIE-BU　環境センサ USB型 | OMRON - Japan - https://www.omron.co.jp/ecb/product-detail?partNumber=2JCIE-BU
