@@ -1,0 +1,6 @@
+# https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
+# This is a source repository that automatically syncs to the production add-ons suite
+name: "OMRON 2JCIE-BU Exporter (Source)"
+url: "https://github.com/yasu-hide/2jciebu-prometheus"
+maintainer: "yasu-hide"
+description: "Source repository for 2JCIE-BU Exporter add-on"
