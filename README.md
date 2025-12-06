@@ -1,10 +1,10 @@
-# 2JCIE-BU to Prometheus
+# OMRON 2JCIE-BU Prometheus Exporter
 
-![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/vet5lqplpecmpnqb/2jciebu-machinist?label=DOCKER%20BUILD)
-![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/vet5lqplpecmpnqb/2jciebu-machinist?label=DOCKER%20BUILD)
+![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/vet5lqplpecmpnqb/2jciebu-exporter?label=DOCKER%20BUILD)
+![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/vet5lqplpecmpnqb/2jciebu-exporter?label=DOCKER%20BUILD)
 
 
-OMRON USB環境センサ [2JCIE-BU](https://www.omron.co.jp/ecb/product-detail?partId=73063)から取得した値を、exporterを通じてPrometheusに投入するスクリプトです。
+OMRON USB環境センサ [2JCIE-BU](https://www.omron.co.jp/ecb/product-detail?partId=73063)から取得した値を、Prometheusに投入するExporterです。
 
 Dockerコンテナで動作します。
 
@@ -43,13 +43,13 @@ systemctl udevd restart
 
 ## リポジトリクローン
 ```
-git clone https://github.com/yasu-hide/2jciebu-prometheus
+git clone https://github.com/yasu-hide/2jciebu-exporter
 ```
 
 ## 設定編集
 詳細は 設定ファイル (.envファイル) を参照
 ```
-cd 2jciebu-prometheus
+cd 2jciebu-exporter
 cat <<'EOF' > .env
 SENSOR_SERIAL_DEVICE=/dev/ttyUSB0
 SERVER_HTTP_PORT=8000

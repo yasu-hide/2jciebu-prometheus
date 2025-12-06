@@ -1,8 +1,9 @@
 ---
-version: "3"
 services:
-  2jciebu-prometheus:
-    image: vet5lqplpecmpnqb/2jciebu-prometheus
+  2jciebu-exporter:
+    image: vet5lqplpecmpnqb/2jciebu-exporter
+    build:
+      context: .
     env_file:
       - .env
     deploy:

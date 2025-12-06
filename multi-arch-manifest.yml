@@ -1,12 +1,12 @@
 ---
-image: vet5lqplpecmpnqb/2jciebu-prometheus:latest
+image: vet5lqplpecmpnqb/2jciebu-exporter:latest
 manifests:
-- image: vet5lqplpecmpnqb/2jciebu-prometheus:arm64v8
+- image: vet5lqplpecmpnqb/2jciebu-exporter:arm64v8
   platform:
     architecture: arm64
     os: linux
     variant: v8
-- image: vet5lqplpecmpnqb/2jciebu-prometheus:arm32v7
+- image: vet5lqplpecmpnqb/2jciebu-exporter:arm32v7
   platform:
     architecture: arm
     os: linux
